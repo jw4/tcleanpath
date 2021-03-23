@@ -1,0 +1,232 @@
+#!/usr/bin/env -S tcc -run
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <sys/stat.h>
+
+#define PATH_MAX 4096
+
+typedef struct linked_list_node * nptr;
+typedef struct linked_list_node {
+    nptr next;
+    const char * data;
+    int len;
+} linked_list_node;
+
+nptr
+create_node(const char * w, const int len)
+{
+    nptr newNode = (nptr) malloc(sizeof(linked_list_node));
+    newNode->next = 0;
+    newNode->data = w;
+    newNode->len = len;
+    return newNode;
+}
+
+char *
+copy_data(char * buf, nptr node, int max_len)
+{
+    if (node == 0) {
+        return 0;
+    }
+
+    if (node->len == 0) {
+        return 0;
+    }
+
+    int len = max_len - 1;
+    int ix = 0;
+
+    if (node->len < len) {
+        len = node->len;
+    }
+
+    for(; ix < len; ix++) {
+        buf[ix] = node->data[ix];
+    }
+
+    for(; ix < max_len; ix++) {
+        buf[ix] = 0;
+    }
+
+    return buf;
+}
+
+int
+valid_path(nptr node)
+{
+    char buf[PATH_MAX];
+    char * path = copy_data(buf, node, PATH_MAX);
+
+    if (path == 0) {
+        return 0;
+    }
+
+    if (path[0] != '/') {
+        return 0;
+    }
+
+    struct stat sbuf;
+
+    if(0 == stat(buf, &sbuf)) {
+        switch (sbuf.st_mode & S_IFMT) {
+        case S_IFDIR:
+            return 1;
+        }
+    }
+
+    return 0;
+}
+
+void
+print_node(nptr node)
+{
+    if (node == 0) {
+        fprintf(stderr, "<nil>\n");
+        return;
+    }
+
+    for(int ix = 0; ix < node->len; ix++) {
+        fprintf(stdout, "%c", node->data[ix]);
+    }
+}
+
+int
+compare_node(nptr lhs, nptr rhs)
+{
+    if(lhs == rhs) {
+        return 0;
+    }
+
+    if(lhs == 0) {
+        return -1;
+    }
+
+    if(rhs == 0) {
+        return 1;
+    }
+
+    int len = 0;
+
+    if (lhs->len < rhs->len) {
+        len = lhs->len;
+
+    } else {
+        len = rhs->len;
+    }
+
+    for (int ix = 0; ix < len; ix++) {
+        if (lhs->data[ix] == rhs->data[ix]) {
+            continue;
+        }
+
+        if (lhs->data[ix] < rhs->data[ix]) {
+            return -1;
+
+        } else {
+            return 1;
+        }
+    }
+
+    if (lhs->len == rhs->len) {
+        return 0;
+    }
+
+    if (lhs->len < rhs->len) {
+        return -1;
+    }
+
+    return 1;
+}
+
+int
+compare_data(nptr lhs, const char * w, const int len)
+{
+    nptr t = create_node(w, len);
+    int c = compare_node(lhs, t);
+    free(t);
+    return c;
+}
+
+nptr
+add_node(nptr node, const char * w, const int len)
+{
+    nptr nn = create_node(w, len);
+
+    while (node != 0) {
+        if (0 == compare_node(node, nn)) {
+            free(nn);
+            return node;
+        }
+
+        if(node->next == 0) {
+            node->next = nn;
+            break;
+        }
+
+        node = node->next;
+    }
+
+    return nn;
+}
+
+int
+main(int argc, char ** argv)
+{
+    nptr head = 0;
+
+    for(int ix = 1; ix < argc; ix++) {
+        nptr node = 0;
+        char * cur = argv[ix];
+        char * wp = argv[ix];
+        int lx = 0;
+
+        while (*cur != 0) {
+            switch (*cur) {
+            case ':':
+                node = add_node(head, wp, lx);
+
+                if (head == 0) {
+                    head = node;
+                }
+
+                wp = cur + 1;
+                lx = 0;
+                break;
+
+            default:
+                lx++;
+                break;
+            }
+
+            cur++;
+        }
+
+        if (lx > 0) {
+            node = add_node(head, wp, lx);
+
+            if (head == 0) {
+                head = node;
+            }
+        }
+    }
+
+    int ct = 0;
+
+    while(head != 0) {
+        if(1 == valid_path(head)) {
+            if (ct > 0) {
+                fprintf(stdout, ":");
+            }
+
+            print_node(head);
+            ct++;
+        }
+
+        head = head->next;
+    }
+
+    return 0;
+}
+
+/* vi:se ft=c: */
