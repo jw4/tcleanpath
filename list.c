@@ -1,17 +1,9 @@
-#!/usr/bin/env -S tcc -run
-
-#include <stdio.h>
-#include <stdlib.h>
 #include <sys/stat.h>
-
-#define PATH_MAX 4096
-
-typedef struct linked_list_node * nptr;
-typedef struct linked_list_node {
-    nptr next;
-    const char * data;
-    int len;
-} linked_list_node;
+#include <fcntl.h>
+#include <unistd.h>
+#include <stdlib.h>
+#include <stdio.h>
+#include "list.h"
 
 nptr
 create_node(const char * w, const int len)
@@ -170,63 +162,3 @@ add_node(nptr node, const char * w, const int len)
     return nn;
 }
 
-int
-main(int argc, char ** argv)
-{
-    nptr head = 0;
-
-    for(int ix = 1; ix < argc; ix++) {
-        nptr node = 0;
-        char * cur = argv[ix];
-        char * wp = argv[ix];
-        int lx = 0;
-
-        while (*cur != 0) {
-            switch (*cur) {
-            case ':':
-                node = add_node(head, wp, lx);
-
-                if (head == 0) {
-                    head = node;
-                }
-
-                wp = cur + 1;
-                lx = 0;
-                break;
-
-            default:
-                lx++;
-                break;
-            }
-
-            cur++;
-        }
-
-        if (lx > 0) {
-            node = add_node(head, wp, lx);
-
-            if (head == 0) {
-                head = node;
-            }
-        }
-    }
-
-    int ct = 0;
-
-    while(head != 0) {
-        if(1 == valid_path(head)) {
-            if (ct > 0) {
-                fprintf(stdout, ":");
-            }
-
-            print_node(head);
-            ct++;
-        }
-
-        head = head->next;
-    }
-
-    return 0;
-}
-
-/* vi:se ft=c: */
