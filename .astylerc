@@ -2,11 +2,10 @@ style=google
 indent=spaces=2
 break-blocks
 pad-oper
-pad-paren-out
 delete-empty-lines
-align-pointer=type
+align-pointer=name
 add-braces
-break-return-type
+keep-one-line-statements
 max-code-length=120
 break-after-logical
 suffix=none
