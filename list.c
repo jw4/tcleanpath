@@ -140,35 +140,19 @@ int compare_node(nptr lhs, nptr rhs) {
     return 1;
   }
 
-  int len = 0;
-
-  if (lhs->len < rhs->len) {
-    len = lhs->len;
-  } else {
-    len = rhs->len;
+  // Quick length comparison for early exit (optimization for duplicates)
+  if (lhs->len != rhs->len) {
+    return (lhs->len < rhs->len) ? -1 : 1;
   }
 
-  for (int ix = 0; ix < len; ix++) {
-    if (lhs->data[ix] == rhs->data[ix]) {
-      continue;
-    }
-
-    if (lhs->data[ix] < rhs->data[ix]) {
-      return -1;
-    } else {
-      return 1;
+  // Lengths are equal, compare character by character
+  for (int ix = 0; ix < lhs->len; ix++) {
+    if (lhs->data[ix] != rhs->data[ix]) {
+      return (lhs->data[ix] < rhs->data[ix]) ? -1 : 1;
     }
   }
 
-  if (lhs->len == rhs->len) {
-    return 0;
-  }
-
-  if (lhs->len < rhs->len) {
-    return -1;
-  }
-
-  return 1;
+  return 0;  // Strings are identical
 }
 
 int compare_data(nptr lhs, const char *w, const int len) {
