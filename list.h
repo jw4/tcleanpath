@@ -15,6 +15,10 @@ char *copy_data(char *buf, nptr node, int max_len);
 
 int valid_path(nptr node);
 
+// Alternative validation with error reporting (not currently used)
+// Returns: 1 for valid directory, 0 for invalid, -1 for stat error
+int valid_path_verbose(nptr node);
+
 void print_node(nptr node);
 
 int compare_node(nptr lhs, nptr rhs);

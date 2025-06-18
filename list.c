@@ -1,4 +1,5 @@
 #include "list.h"
+#include <errno.h>
 #include <fcntl.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -62,9 +63,43 @@ int valid_path(nptr node) {
     case S_IFDIR:
       return 1;
     }
+  } else {
+    // For debugging purposes, we could distinguish between:
+    // ENOENT - path does not exist
+    // EACCES - permission denied
+    // ENOTDIR - component of path is not a directory
+    // But for this utility, we treat all failures as invalid paths
   }
 
   return 0;
+}
+
+int valid_path_verbose(nptr node) {
+  char buf[PATH_MAX];
+  char *path = copy_data(buf, node, PATH_MAX);
+
+  if (path == 0) {
+    return 0;
+  }
+
+  if (path[0] != '/') {
+    return 0;
+  }
+
+  struct stat sbuf;
+
+  if (0 == stat(buf, &sbuf)) {
+    switch (sbuf.st_mode & S_IFMT) {
+    case S_IFDIR:
+      return 1;
+    default:
+      return 0;  // Not a directory
+    }
+  } else {
+    // Could check errno here for specific error types:
+    // ENOENT, EACCES, ENOTDIR, ENAMETOOLONG, etc.
+    return -1;  // stat() error
+  }
 }
 
 void print_node(nptr node) {
