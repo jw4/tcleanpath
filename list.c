@@ -7,6 +7,9 @@
 
 nptr create_node(const char *w, const int len) {
   nptr newNode = (nptr)malloc(sizeof(linked_list_node));
+  if (newNode == 0) {
+    return 0;
+  }
   newNode->next = 0;
   newNode->data = w;
   newNode->len = len;
@@ -121,6 +124,9 @@ int compare_node(nptr lhs, nptr rhs) {
 
 int compare_data(nptr lhs, const char *w, const int len) {
   nptr t = create_node(w, len);
+  if (t == 0) {
+    return -1;  // Memory allocation failed, treat as mismatch
+  }
   int c = compare_node(lhs, t);
   free(t);
   return c;
@@ -128,6 +134,9 @@ int compare_data(nptr lhs, const char *w, const int len) {
 
 nptr add_node(nptr node, const char *w, const int len) {
   nptr nn = create_node(w, len);
+  if (nn == 0) {
+    return 0;  // Memory allocation failed
+  }
 
   while (node != 0) {
     if (0 == compare_node(node, nn)) {
