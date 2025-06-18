@@ -41,14 +41,16 @@ int main(int argc, char **argv) {
 
     while (*cur != 0) {
       if (separator == *cur) {
-        node = add_node(head, wp, lx);
-        if (node == 0) {
-          fprintf(stderr, "Memory allocation failed\n");
-          return 253;
-        }
+        if (lx > 0) {
+          node = add_node(head, wp, lx);
+          if (node == 0) {
+            fprintf(stderr, "Memory allocation failed\n");
+            return 253;
+          }
 
-        if (head == 0) {
-          head = node;
+          if (head == 0) {
+            head = node;
+          }
         }
 
         wp = cur + 1;
