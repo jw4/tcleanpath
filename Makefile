@@ -8,3 +8,7 @@ clean:
 .PHONY: format
 format:
 	astyle --options=.astylerc cleanpath.c list.c list.h
+
+.PHONY: test
+test: cleanpath
+	@./test.sh
