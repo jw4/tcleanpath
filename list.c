@@ -1,21 +1,19 @@
-#include <sys/stat.h>
-#include <fcntl.h>
-#include <unistd.h>
-#include <stdlib.h>
-#include <stdio.h>
 #include "list.h"
+#include <fcntl.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <sys/stat.h>
+#include <unistd.h>
 
-nptr
-create_node (const char* w, const int len) {
-  nptr newNode = (nptr) malloc (sizeof (linked_list_node) );
+nptr create_node(const char *w, const int len) {
+  nptr newNode = (nptr)malloc(sizeof(linked_list_node));
   newNode->next = 0;
   newNode->data = w;
   newNode->len = len;
   return newNode;
 }
 
-char*
-copy_data (char* buf, nptr node, int max_len) {
+char *copy_data(char *buf, nptr node, int max_len) {
   if (node == 0) {
     return 0;
   }
@@ -42,10 +40,9 @@ copy_data (char* buf, nptr node, int max_len) {
   return buf;
 }
 
-int
-valid_path (nptr node) {
+int valid_path(nptr node) {
   char buf[PATH_MAX];
-  char* path = copy_data (buf, node, PATH_MAX);
+  char *path = copy_data(buf, node, PATH_MAX);
 
   if (path == 0) {
     return 0;
@@ -57,7 +54,7 @@ valid_path (nptr node) {
 
   struct stat sbuf;
 
-  if (0 == stat (buf, &sbuf) ) {
+  if (0 == stat(buf, &sbuf)) {
     switch (sbuf.st_mode & S_IFMT) {
     case S_IFDIR:
       return 1;
@@ -67,20 +64,18 @@ valid_path (nptr node) {
   return 0;
 }
 
-void
-print_node (nptr node) {
+void print_node(nptr node) {
   if (node == 0) {
-    fprintf (stderr, "<nil>\n");
+    fprintf(stderr, "<nil>\n");
     return;
   }
 
   for (int ix = 0; ix < node->len; ix++) {
-    fprintf (stdout, "%c", node->data[ix]);
+    fprintf(stdout, "%c", node->data[ix]);
   }
 }
 
-int
-compare_node (nptr lhs, nptr rhs) {
+int compare_node(nptr lhs, nptr rhs) {
   if (lhs == rhs) {
     return 0;
   }
@@ -124,21 +119,19 @@ compare_node (nptr lhs, nptr rhs) {
   return 1;
 }
 
-int
-compare_data (nptr lhs, const char* w, const int len) {
-  nptr t = create_node (w, len);
-  int c = compare_node (lhs, t);
-  free (t);
+int compare_data(nptr lhs, const char *w, const int len) {
+  nptr t = create_node(w, len);
+  int c = compare_node(lhs, t);
+  free(t);
   return c;
 }
 
-nptr
-add_node (nptr node, const char* w, const int len) {
-  nptr nn = create_node (w, len);
+nptr add_node(nptr node, const char *w, const int len) {
+  nptr nn = create_node(w, len);
 
   while (node != 0) {
-    if (0 == compare_node (node, nn) ) {
-      free (nn);
+    if (0 == compare_node(node, nn)) {
+      free(nn);
       return node;
     }
 
@@ -152,4 +145,3 @@ add_node (nptr node, const char* w, const int len) {
 
   return nn;
 }
-
