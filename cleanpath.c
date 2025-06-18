@@ -75,6 +75,13 @@ int main(int argc, char **argv) {
     }
   }
 
+  // flag is set when a flag is encountered, and then cleared to zero when a
+  // value for that flag is found.
+  if (flag != 0) {
+    fprintf(stderr, "-separator requires an argument\n");
+    return 252;
+  }
+
   int ct = 0;
 
   while (head != 0) {
