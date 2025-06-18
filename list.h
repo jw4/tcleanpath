@@ -11,6 +11,9 @@ typedef struct linked_list_node {
 
 nptr create_node(const char *w, const int len);
 
+// Create node with normalized path (removes trailing slashes)
+nptr create_node_normalized(const char *w, const int len);
+
 char *copy_data(char *buf, nptr node, int max_len);
 
 int valid_path(nptr node);

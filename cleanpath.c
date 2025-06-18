@@ -43,6 +43,7 @@ int main(int argc, char **argv) {
       if (separator == *cur) {
         if (lx > 0) {
           node = add_node(head, wp, lx);
+
           if (node == 0) {
             fprintf(stderr, "Memory allocation failed\n");
             return 253;
@@ -64,6 +65,7 @@ int main(int argc, char **argv) {
 
     if (lx > 0) {
       node = add_node(head, wp, lx);
+
       if (node == 0) {
         fprintf(stderr, "Memory allocation failed\n");
         return 253;

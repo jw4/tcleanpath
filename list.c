@@ -8,13 +8,26 @@
 
 nptr create_node(const char *w, const int len) {
   nptr newNode = (nptr)malloc(sizeof(linked_list_node));
+
   if (newNode == 0) {
     return 0;
   }
+
   newNode->next = 0;
   newNode->data = w;
   newNode->len = len;
   return newNode;
+}
+
+nptr create_node_normalized(const char *w, const int len) {
+  int normalized_len = len;
+
+  // Remove trailing slashes (but keep root "/" as is)
+  while (normalized_len > 1 && w[normalized_len - 1] == '/') {
+    normalized_len--;
+  }
+
+  return create_node(w, normalized_len);
 }
 
 char *copy_data(char *buf, nptr node, int max_len) {
@@ -92,6 +105,7 @@ int valid_path_verbose(nptr node) {
     switch (sbuf.st_mode & S_IFMT) {
     case S_IFDIR:
       return 1;
+
     default:
       return 0;  // Not a directory
     }
@@ -158,17 +172,20 @@ int compare_node(nptr lhs, nptr rhs) {
 }
 
 int compare_data(nptr lhs, const char *w, const int len) {
-  nptr t = create_node(w, len);
+  nptr t = create_node_normalized(w, len);
+
   if (t == 0) {
     return -1;  // Memory allocation failed, treat as mismatch
   }
+
   int c = compare_node(lhs, t);
   free(t);
   return c;
 }
 
 nptr add_node(nptr node, const char *w, const int len) {
-  nptr nn = create_node(w, len);
+  nptr nn = create_node_normalized(w, len);
+
   if (nn == 0) {
     return 0;  // Memory allocation failed
   }
