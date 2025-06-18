@@ -1,5 +1,6 @@
 #include "list.h"
 #include <stdio.h>
+#include <string.h>
 #include <sys/stat.h>
 
 int main(int argc, char **argv) {
@@ -11,11 +12,10 @@ int main(int argc, char **argv) {
 
   for (int ix = 1; ix < argc; ix++) {
     if ('-' == argv[ix][0]) {
-      for (int fx = 0; fx < sepflaglen; fx++) {
-        if (argv[ix][fx] != sepflag[fx]) {
-          fprintf(stderr, "unknown flag %s\n", argv[ix]);
-          return 255;
-        }
+      if (strlen(argv[ix]) != sepflaglen ||
+          strncmp(argv[ix], sepflag, sepflaglen) != 0) {
+        fprintf(stderr, "unknown flag %s\n", argv[ix]);
+        return 255;
       }
 
       flag = 1;
