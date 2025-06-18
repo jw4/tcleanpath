@@ -1,5 +1,4 @@
 #include "list.h"
-#include <errno.h>
 #include <fcntl.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -36,6 +35,22 @@ char *copy_data(char *buf, nptr node, int max_len) {
   }
 
   if (node->len == 0) {
+    return 0;
+  }
+
+  // Validate path length
+  if (node->len >= max_len) {
+    fprintf(stderr, "Path too long (max %d chars): ", max_len - 1);
+
+    for (int i = 0; i < (node->len < 50 ? node->len : 50); i++) {
+      fprintf(stderr, "%c", node->data[i]);
+    }
+
+    if (node->len > 50) {
+      fprintf(stderr, "...");
+    }
+
+    fprintf(stderr, "\n");
     return 0;
   }
 
@@ -107,12 +122,12 @@ int valid_path_verbose(nptr node) {
       return 1;
 
     default:
-      return 0;  // Not a directory
+      return 0; // Not a directory
     }
   } else {
     // Could check errno here for specific error types:
     // ENOENT, EACCES, ENOTDIR, ENAMETOOLONG, etc.
-    return -1;  // stat() error
+    return -1; // stat() error
   }
 }
 
@@ -152,14 +167,14 @@ int compare_node(nptr lhs, nptr rhs) {
     }
   }
 
-  return 0;  // Strings are identical
+  return 0; // Strings are identical
 }
 
 int compare_data(nptr lhs, const char *w, const int len) {
   nptr t = create_node_normalized(w, len);
 
   if (t == 0) {
-    return -1;  // Memory allocation failed, treat as mismatch
+    return -1; // Memory allocation failed, treat as mismatch
   }
 
   int c = compare_node(lhs, t);
@@ -171,7 +186,7 @@ nptr add_node(nptr node, const char *w, const int len) {
   nptr nn = create_node_normalized(w, len);
 
   if (nn == 0) {
-    return 0;  // Memory allocation failed
+    return 0; // Memory allocation failed
   }
 
   while (node != 0) {
